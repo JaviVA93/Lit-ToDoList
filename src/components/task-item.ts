@@ -25,12 +25,15 @@ export class taskItem extends LitElement {
     }
     
     render() {
-        console.log(this.name)
-
         return html`
             <span>${this.name}</span>
-            <span>Status: ${this.completed ? '✅' : '🧑‍💻'}</span>
-            <input id="tasksStatus" type="checkbox" @change=${this.statusChange} />
+            <label for="taskStatusInput">Status: ${this.completed ? '✅' : '🧑‍💻'}</label>
+            <input 
+                id="tasksStatus" 
+                name="taskStatusInput" 
+                type="checkbox" 
+                ?checked=${this.completed}
+                @change=${this.statusChange} />
         `
     }
 }

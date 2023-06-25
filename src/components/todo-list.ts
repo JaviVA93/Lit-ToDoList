@@ -1,13 +1,9 @@
 import { html, css, LitElement } from 'lit'
 import { customElement, query, state } from 'lit/decorators.js'
+import { Ttask } from '../utils/types'
 
 import './task-item'
 
-type Ttask = {
-    id: string,
-    name: string,
-    completed: boolean
-}
 
 @customElement('todo-list')
 export class TodoList extends LitElement {
@@ -26,6 +22,7 @@ export class TodoList extends LitElement {
     }
 
     addTodo() {
+
         if (!this.newTaskInput || this.newTaskInput.value === '')
             return
 
@@ -38,7 +35,7 @@ export class TodoList extends LitElement {
     }
 
     changeStatus(taskId: string, completed: boolean) {
-        console.log(this)
+        
         const index = this.tasks.findIndex(i => i.id === taskId)
         if (index === -1) {
             console.error('task ID not found on list')
@@ -51,7 +48,18 @@ export class TodoList extends LitElement {
         this.updateTasks(tasksCopy)
     }
 
+    removeCompletedTasks() {
+        this.updateTasks(this.tasks.filter(t => !t.completed))
+
+    }
+
     static styles = css`
+        .todoList{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
         .tasksList {
             display: flex;
             flex-direction: column;
@@ -62,21 +70,26 @@ export class TodoList extends LitElement {
 
     render() {
         return html`
-            <h1>TODO List 😀</h1>
-            <div class="tasksList">
-                ${this.tasks.map(t => html`
+            <div class="todoList">
+                <h1>TODO List 😀</h1>
+                <form>
+                    <input id="newTask" placeholder="Task title..." />
+                    <button type="button" @click=${this.addTodo}>Add Todo</button>
+                </form>
+                <div class="tasksList">
+                    ${this.tasks.map(t => html`
                     <task-item 
-                        .id=${t.id}
-                        .name=${t.name} 
-                        .completed=${t.completed} 
-                        .changeStatus=${() => this.changeStatus(t.id, t.completed)}>
-                    </task-item>
+                    .id=${t.id}
+                    .name=${t.name} 
+                    .completed=${t.completed} 
+                    .changeStatus=${this.changeStatus.bind(this)}>
+                </task-item>
                 `)}
+                </div>
+                ${(this.tasks.some(t => t.completed === true))
+                    ? html`<button type="button" @click=${this.removeCompletedTasks}>Remove Completed tasks</button>`
+                    : ''}
             </div>
-            <form>
-                <input id="newTask" placeholder="Task title..." />
-                <button type="button" @click=${this.addTodo}>Add Todo</button>
-            </form>
         `
     }
 }
